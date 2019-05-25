@@ -37,5 +37,8 @@
     "tsdx": "^0.5.11",
     "tslib": "^1.9.3",
     "typescript": "^3.4.5"
-  }
+  },
+  "repository": "https://github.com/sw-yx/cli-state.git",
+  "author": "sw-yx <swyx@dontemail.me>",
+  "license": "MIT"
 }
