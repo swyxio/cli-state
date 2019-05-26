@@ -1,6 +1,6 @@
 import { flags } from '@oclif/command';
 import BaseCommand from '../../base';
-import { globalConfig, projectConfig } from 'cli-state';
+import { globalConfig, projectConfig, accessGlobalFrecency } from 'cli-state';
 
 export default class Hello extends BaseCommand {
   static description = 'describe the command here';
@@ -20,17 +20,17 @@ hello world from ./src/hello.ts!
     force: flags.boolean({ char: 'f' }),
   };
 
-  static args = [{ name: 'file' }];
-
   async run() {
     const { args, flags } = this.parse(Hello);
     const name = flags.name || 'world';
     this.log(`hello ${name} from ./src/commands/hello.ts`);
-    globalConfig.set('name', undefined);
+    globalConfig.set('name', 3);
+    globalConfig.store;
     console.log(globalConfig.path);
     projectConfig.set('name', name);
     if (args.file && flags.force) {
       this.log(`you input --force and --file: ${args.file}`);
     }
+    console.log(accessGlobalFrecency('people'));
   }
 }

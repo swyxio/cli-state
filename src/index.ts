@@ -7,8 +7,6 @@ import envPaths from 'env-paths';
 // https://stackoverflow.com/questions/43481518/get-argument-types-for-function-class-constructor
 // type GetConstructorArgs<T> = T extends new (arg1: infer U) => any ? U : never;
 // type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
-// type ConfOptions = NonNullable<GetConstructorArgs<typeof Conf>>;
-// type ConfOptions = GetConstructorArgs<typeof Conf>
 
 type AcceptableConfigTypes = string | boolean | number;
 interface AcceptableConfigDict {
@@ -17,24 +15,39 @@ interface AcceptableConfigDict {
 /** can take an indefinitely nested set of strings, bools, or nums */
 type ConfigTypes = AcceptableConfigDict | AcceptableConfigTypes;
 
+let willPrintDebugMessages = false;
+
 /** machine/user level config */
 export let globalConfig: Conf<ConfigTypes>;
 /** machine/user level frecencystore */
 export let accessGlobalFrecency: (key: string) => Frecency;
 /** project level config */
 export let projectConfig: Conf<ConfigTypes>;
-
+type idAttrFn = (result: string) => string;
 export type initCLIStateArgs = {
   projectConfigPath: string;
   globalConfOptions?: Conf.Options<ConfigTypes>;
   projectConfOptions?: Conf.Options<ConfigTypes>;
+  frecencyOpts?: {
+    idAttribute?: string | idAttrFn;
+    timeStampsLimit?: number;
+    recentSelectionsLimit?: number;
+    exactQueryMatchWeight?: number;
+    subQueryMatchWeight?: number;
+    recentSelectionsMatchWeight?: number;
+  };
+  printDebugMessages?: boolean;
 };
 export const initCLIState = ({
   /** where in your current project do you store your config */
   projectConfigPath,
   globalConfOptions = {},
   projectConfOptions = {},
+  frecencyOpts,
+  /** pass true to print debug msgs */
+  printDebugMessages,
 }: initCLIStateArgs) => {
+  willPrintDebugMessages = printDebugMessages || false;
   // provide some nice defaults for the CLI global settings
   const globalConfigDefaults = {
     /* disable stats from being sent home */
@@ -56,14 +69,19 @@ export const initCLIState = ({
       _options: { projectName: string };
     };
     const storageProviderFrecencyFilePath = envPaths(options.projectName).cache; // store frecency in cache, it is disposable
+    if (willPrintDebugMessages) {
+      console.log({
+        storageProviderFrecencyFilePath,
+        globalConfigPath: globalConfig.path,
+      });
+    }
     const storageProvider = new LocalStorage(storageProviderFrecencyFilePath);
     accessGlobalFrecency = key =>
       new Frecency({
         key,
         storageProvider,
-        // exactQueryMatchWeight: 1.9, // default to 1.0
-        // subQueryMatchWeight: 0.5, // default to 0.7
-        // recentSelectionsMatchWeight: 0.1, // default to 0.5
+        idAttribute: 'value',
+        ...frecencyOpts,
       });
   }
 
