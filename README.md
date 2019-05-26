@@ -1,27 +1,40 @@
-# TSDX Bootstrap
+# CLI-state
+
+> ⚠️this library is totally unstable and incomplete.
+
+This library aims to make it easy to read, persist, and prompt for required settings for CLI's.
+
+Two secondary goals we might not reach but want to consider:
+
+- make caching easy for offline friendly CLI's
+- make it easy to store history of inputs for autocompletion support
+
+## Philosophy of CLI state
+
+Here are some sources of CLI config:
+
+- CLI flags (prefer flags over arguments)
+- Project Config (e.g. `package.json`, an `rc` file read by [cosmiconfig](https://github.com/davidtheclark/cosmiconfig), or some other special file e.g. `toml`)
+- Project Filesystem (eg do you have special folders/files setup)
+- Machine/User Config
+- _Remote_ user account settings
+- _Remote_ team account settings
+- _Remote_ global telemetry based defaults
+
+While offline, we may also lean on caches as sources of state:
+
+- Project cache
+- Machine/User Cache
+- _Cached_ user account settings
+- _Cached_ team account settings
+- _Cached_ global telemetry based defaults
+
+## Config vs State
+
+We make a (possibly confusing?) distinction between config vs state. Config is static - it is what it is before the CLI starts, and doesn't change. State is dynamic, you can set state during your CLI session and expect it to persist between sessions. If a state is missing, we can prompt for it, and then offer to persist it, or tell the user how to override it in future with a flag.
+
+## API
+
+## TSDX Bootstrap
 
 This project was bootstrapped with [TSDX](https://github.com/jaredpalmer/tsdx).
-
-## Local Development
-
-Below is a list of commands you will probably find useful.
-
-### `npm start` or `yarn start`
-
-Runs the project in development/watch mode. Your project will be rebuilt upon changes. TSDX has a special logger for you convenience. Error messages are pretty printed and formatted for compatibility VS Code's Problems tab.
-
-<img src="https://user-images.githubusercontent.com/4060187/52168303-574d3a00-26f6-11e9-9f3b-71dbec9ebfcb.gif" width="600" />
-
-Your library will be rebuilt if you make edits.
-
-### `npm run build` or `yarn build`
-
-Bundles the package to the `dist` folder.
-The package is optimized and bundled with Rollup into multiple formats (CommonJS, UMD, and ES Module).
-
-<img src="https://user-images.githubusercontent.com/4060187/52168322-a98e5b00-26f6-11e9-8cf6-222d716b75ef.gif" width="600" />
-
-### `npm test` or `yarn test`
-
-Runs the test watcher (Jest) in an interactive mode.
-By default, runs tests related to files changed since the last commit.

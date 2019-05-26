@@ -21,6 +21,7 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "baseUrl": "./",
+    "typeRoots": ["types"],
     "paths": {
       "*": ["src/*", "node_modules/*"]
     },

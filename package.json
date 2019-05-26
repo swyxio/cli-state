@@ -1,36 +1,21 @@
 {
   "name": "cli-state",
   "version": "0.0.3",
-  "main": "dist/index.js",
-  "umd:main": "dist/cli-state.umd.production.js",
-  "module": "dist/cli-state.es.production.js",
-  "typings": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test",
-    "version": "auto-changelog -p --template keepachangelog && git add CHANGELOG.md",
-    "prepublishOnly": "git push && git push --tags && gh-release"
-  },
-  "peerDependencies": {},
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
-  },
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5"
+  "author": "sw-yx <swyx@dontemail.me>",
+  "dependencies": {
+    "conf": "^4.0.2",
+    "env-paths": "^2.2.0",
+    "frecency": "^1.3.1",
+    "node-localstorage": "^1.3.1",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",
+    "@types/node-localstorage": "^1.3.0",
+    "@types/uuid": "^3.4.4",
     "auto-changelog": "^1.13.0",
     "gh-release": "^3.5.0",
+    "globby": "^8",
     "husky": "^2.3.0",
     "prettier": "^1.17.1",
     "pretty-quick": "^1.11.0",
@@ -38,7 +23,32 @@
     "tslib": "^1.9.3",
     "typescript": "^3.4.5"
   },
+  "files": [
+    "dist"
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/cli-state.es.production.js",
+  "peerDependencies": {},
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
   "repository": "https://github.com/sw-yx/cli-state.git",
-  "author": "sw-yx <swyx@dontemail.me>",
-  "license": "MIT"
+  "scripts": {
+    "build": "tsdx build",
+    "prepublishOnly": "git push && git push --tags && gh-release",
+    "start": "tsdx watch",
+    "test": "tsdx test",
+    "version": "auto-changelog -p --template keepachangelog && git add CHANGELOG.md"
+  },
+  "typings": "dist/index.d.ts",
+  "umd:main": "dist/cli-state.umd.production.js"
 }
