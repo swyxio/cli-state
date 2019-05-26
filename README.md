@@ -9,7 +9,11 @@ Two secondary goals we might not reach but want to consider:
 - make caching easy for offline friendly CLI's
 - make it easy to store history of inputs for autocompletion support or suggestion of what user should do next
 
+<details><summary>
+
 ## High Level Philosophy of CLI state
+
+</summary>
 
 Here are some sources of CLI config:
 
@@ -29,9 +33,11 @@ While offline, we may also lean on caches as sources of state:
 - _Cached_ team account settings
 - _Cached_ global telemetry based defaults
 
-## Config vs State
+**Config vs State**
 
 We make a (possibly confusing?) distinction between config vs state. Config is static - it is what it is before the CLI starts, and doesn't change. State is dynamic, you can set state during your CLI session and expect it to persist between sessions. If a state is missing, we can prompt for it, and then offer to persist it, or tell the user how to override it in future with a flag.
+
+</details>
 
 ## Getting Started
 
