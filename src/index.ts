@@ -10,17 +10,24 @@ import envPaths from 'env-paths';
 // type ConfOptions = NonNullable<GetConstructorArgs<typeof Conf>>;
 // type ConfOptions = GetConstructorArgs<typeof Conf>
 
+type AcceptableConfigTypes = string | boolean | number;
+interface AcceptableConfigDict {
+  [key: string]: AcceptableConfigTypes | AcceptableConfigDict;
+}
+/** can take an indefinitely nested set of strings, bools, or nums */
+type ConfigTypes = AcceptableConfigDict | AcceptableConfigTypes;
+
 /** machine/user level config */
-export let globalConfig: Conf;
+export let globalConfig: Conf<ConfigTypes>;
 /** machine/user level frecencystore */
 export let accessGlobalFrecency: (key: string) => Frecency;
 /** project level config */
-export let projectConfig: Conf;
+export let projectConfig: Conf<ConfigTypes>;
 
 export type initCLIStateArgs = {
   projectConfigPath: string;
-  globalConfOptions?: Conf.Options<string>;
-  projectConfOptions?: Conf.Options<string>;
+  globalConfOptions?: Conf.Options<ConfigTypes>;
+  projectConfOptions?: Conf.Options<ConfigTypes>;
 };
 export const initCLIState = ({
   /** where in your current project do you store your config */
@@ -41,7 +48,7 @@ export const initCLIState = ({
       defaults: globalConfigDefaults,
     };
   }
-  globalConfig = new Conf.default<string>(globalConfOptions);
+  globalConfig = new Conf.default<ConfigTypes>(globalConfOptions);
 
   // frecency
   if (globalConfig instanceof Conf.default) {
