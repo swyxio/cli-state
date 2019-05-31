@@ -18,14 +18,14 @@ type ConfigTypes = AcceptableConfigDict | AcceptableConfigTypes;
 let willPrintDebugMessages = false;
 
 /** machine/user level config */
-export let globalConfig: Conf<ConfigTypes>;
+export let globalState: Conf<ConfigTypes>;
 /** machine/user level frecencystore */
 export let accessGlobalFrecency: (key: string) => Frecency;
 /** project level config */
-export let projectConfig: Conf<ConfigTypes>;
+export let projectState: Conf<ConfigTypes>;
 type idAttrFn = (result: string) => string;
 export type initCLIStateArgs = {
-  projectConfigPath: string;
+  projectStatePath: string;
   globalConfOptions?: Conf.Options<ConfigTypes>;
   projectConfOptions?: Conf.Options<ConfigTypes>;
   frecencyOpts?: {
@@ -40,7 +40,7 @@ export type initCLIStateArgs = {
 };
 export const initCLIState = ({
   /** where in your current project do you store your config */
-  projectConfigPath,
+  projectStatePath,
   globalConfOptions = {},
   projectConfOptions = {},
   frecencyOpts,
@@ -49,7 +49,7 @@ export const initCLIState = ({
 }: initCLIStateArgs) => {
   willPrintDebugMessages = printDebugMessages || false;
   // provide some nice defaults for the CLI global settings
-  const globalConfigDefaults = {
+  const globalStateDefaults = {
     /* disable stats from being sent home */
     telemetry: 'enabled',
     /* a unique ID for your CLI user */
@@ -58,21 +58,21 @@ export const initCLIState = ({
   if (!globalConfOptions.defaults) {
     globalConfOptions = {
       ...globalConfOptions,
-      defaults: globalConfigDefaults,
+      defaults: globalStateDefaults,
     };
   }
-  globalConfig = new Conf.default<ConfigTypes>(globalConfOptions);
+  globalState = new Conf.default<ConfigTypes>(globalConfOptions);
 
   // frecency
-  if (globalConfig instanceof Conf.default) {
-    const { _options: options } = globalConfig as typeof globalConfig & {
+  if (globalState instanceof Conf.default) {
+    const { _options: options } = globalState as typeof globalState & {
       _options: { projectName: string };
     };
     const storageProviderFrecencyFilePath = envPaths(options.projectName).cache; // store frecency in cache, it is disposable
     if (willPrintDebugMessages) {
       console.log({
         storageProviderFrecencyFilePath,
-        globalConfigPath: globalConfig.path,
+        globalStatePath: globalState.path,
       });
     }
     const storageProvider = new LocalStorage(storageProviderFrecencyFilePath);
@@ -86,13 +86,13 @@ export const initCLIState = ({
   }
 
   // scope projectConfOptions to cwd
-  projectConfig = new Conf.default({
+  projectState = new Conf.default({
     ...projectConfOptions,
-    cwd: projectConfigPath,
+    cwd: projectStatePath,
   });
   return {
-    globalConfig,
-    projectConfig,
+    globalState,
+    projectState,
     accessGlobalFrecency,
   };
 };

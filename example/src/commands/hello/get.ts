@@ -1,6 +1,6 @@
 import { flags } from '@oclif/command';
 import BaseCommand from '../../base';
-import { globalConfig, projectConfig, accessGlobalFrecency } from 'cli-state';
+import { globalState, projectState, accessGlobalFrecency } from 'cli-state';
 import { prompt } from 'enquirer';
 export default class Hello extends BaseCommand {
   static description = 'describe the command here';
@@ -26,10 +26,10 @@ hello world from ./src/hello.ts!
     const { args, flags } = this.parse(Hello);
     const name = flags.name || 'world';
     this.log(`hello ${name} from ./src/commands/hello.ts`);
-    const type = globalConfig.get('name');
+    const type = globalState.get('name');
     console.log(type, typeof type);
-    console.log(globalConfig.path);
-    projectConfig.get('name');
+    console.log(globalState.path);
+    projectState.get('name');
 
     const freq = accessGlobalFrecency('country');
     const choices = freq.sort({
@@ -68,8 +68,9 @@ function normalize(foo: string) {
 }
 function caseInsensitiveFilter(input: string) {
   return (choice: Choice) => {
+    const _input = input.toLowerCase();
     const msg = choice.message.toLowerCase();
     const hint = choice.hint ? choice.hint.toLowerCase() : '';
-    return (msg + hint).includes(input.toLowerCase());
+    return (msg + hint).includes(_input);
   };
 }

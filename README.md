@@ -20,7 +20,7 @@ Here are some sources of CLI config:
 - CLI flags (prefer flags over arguments)
 - Project Config (e.g. `package.json`, an `rc` file read by [cosmiconfig](https://github.com/davidtheclark/cosmiconfig), or some other special file e.g. `toml`)
 - Project Filesystem (eg do you have special folders/files setup)
-- Machine/User Config
+- Machine Config
 - _Remote_ user account settings
 - _Remote_ team account settings
 - _Remote_ global telemetry based defaults
@@ -28,7 +28,7 @@ Here are some sources of CLI config:
 While offline, we may also lean on caches as sources of state:
 
 - Project cache
-- Machine/User Cache
+- Machine Cache
 - _Cached_ user account settings
 - _Cached_ team account settings
 - _Cached_ global telemetry based defaults
@@ -53,7 +53,7 @@ import { initCLIState } from 'cli-state';
 export default abstract class extends Command {
   async init() {
     // do some initialization
-    initCLIState({ projectConfigPath: '.exampleCLI' });
+    initCLIState({ projectStatePath: '.exampleCLI' });
   }
 }
 ```
@@ -66,7 +66,7 @@ Then we are free to read and write to and from our configs wherever we want:
 // src/commands/hello.ts
 import { flags } from '@oclif/command';
 import BaseCommand from '../../base';
-import { globalConfig, projectConfig } from 'cli-state';
+import { globalState, projectState } from 'cli-state';
 
 export default class Hello extends BaseCommand {
   static description = 'describe the command here';
@@ -92,11 +92,11 @@ hello world from ./src/hello.ts!
     const { args, flags } = this.parse(Hello);
     const name = flags.name || 'world';
     this.log(`hello ${name} from ./src/commands/hello.ts`);
-    globalConfig.set('name', name);
-    const type = globalConfig.get('name');
+    globalState.set('name', name);
+    const type = globalState.get('name');
     console.log(type, typeof type); // types are preserved after deserialization
-    console.log(globalConfig.path); // where the globalconfig is stored
-    projectConfig.set('name'); // same thing for project config
+    console.log('globalState path:', globalState.path); // where the globalState is stored
+    projectState.set('name'); // same thing for project config
   }
 }
 ```
@@ -109,7 +109,7 @@ hello world from ./src/hello.ts!
 
 ```ts
 initCLIState({
-  projectConfigPath: string;
+  projectStatePath: string;
   globalConfOptions?: Conf.Options<ConfigTypes>;
   projectConfOptions?: Conf.Options<ConfigTypes>;
   frecencyOpts?: {
@@ -125,13 +125,13 @@ initCLIState({
 
 This must be run before any of the other functions.
 
-Only `projectConfigPath` is mandatory, and should reflect where you want your project config stored, e.g. in a `.netlify` folder.
+Only `projectStatePath` is mandatory, and should reflect where you want your project config stored, e.g. in a `.netlify` folder.
 
 Both `globalConfOptions` and `projectConfOptions` take the same options as https://github.com/sindresorhus/conf, which you can [see here](https://github.com/sindresorhus/conf#confoptions). In particular you may wish to define a schema. We tweak the options slightly: `globalConfOptions` sets a `telemetry` flag and a unique `cliId` by default, and `projectConfOptions` overrides conf's `cwd` to make the file project specific.
 
 `frecencyOpts` take from https://github.com/mixmaxhq/frecency except `key` and `storageProvider` have been omitted. You set `key` later and `storageProvider` will be set for you. By default, we have made the `idAttribute` be `"value"` instead of `"_id"`, since that is far more common for CLI prompting. but you can override this.
 
-## `globalConfig` and `projectConfig`
+## `globalState` and `projectState`
 
 These two objects have the entire public instance API of https://github.com/sindresorhus/conf. You can view them here: https://github.com/sindresorhus/conf#instance, in particular `.get`, `.set`, and `.store`.
 
